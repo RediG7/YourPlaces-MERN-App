@@ -5,8 +5,7 @@ const Users = () => {
     {
       id: "u1",
       name: "Redi Guleksi",
-      image:
-        "https://www.pexels.com/photo/man-and-woman-holding-vinyl-records-against-faces-7544626/",
+      image: "http://127.0.0.1:3001/src/temp/images/user-image.jpg",
       places: 3,
     },
   ]; // Dummy constant
