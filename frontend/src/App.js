@@ -4,6 +4,7 @@ import Users from "./user/pages/Users";
 import NewPlace from "./places/pages/NewPlace";
 import UserPlaces from "./places/pages/UserPlaces";
 import UpdatePlace from "./places/pages/UpdatePlace";
+import Auth from "./user/pages/Auth";
 import MainNavigation from "./shared/components/Navigation/MainNavigation";
 
 const App = () => {
@@ -17,6 +18,7 @@ const App = () => {
           <Route path="/places/new" element={<NewPlace />} />
           {/* To keep the history clean, you should set replace prop. This will avoid extra redirects after the user click back. */}
           <Route path="/places/:placeId" element={<UpdatePlace />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
