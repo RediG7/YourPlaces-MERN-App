@@ -1,5 +1,7 @@
 const express = require("express");
 
+const HttpError = require("../models/http-error");
+
 const router = express.Router();
 
 const DUMMY_PLACES = [
@@ -30,18 +32,9 @@ router.get("/:pid", (req, res, next) => {
   /*  !undefined = true */
   if (!place) {
     // synchronous code: (can use throw error)
-    const error = new Error("Could not find a place with id: " + placeId);
-    error.code = 404; // dynamically adding property
-    throw error;
-
-    // old error handling way
-    // return res
-    //   .status(404)
-    //   .json({ message: "Place with id: " + placeId + "  Not Found" });
+    throw new HttpError("Could not find a place with id: " + placeId, 404);
   }
 
-  // JS automatically expands this,
-  // if the name of the property is equal to the name of the variable that holds the value you want to store in the property you can shorten it.
   res.json({ place }); // => { place } => { place: place } ...
 });
 
@@ -54,16 +47,12 @@ router.get("/user/:uid", (req, res, next) => {
 
   if (!place) {
     // asynchronous code: (must use next(error))
-    const error = new Error(
-      "Could not find a place for the provided user id: " + userId
+    return next(
+      new HttpError(
+        "Could not find a place for the provided user id: " + userId,
+        404
+      )
     );
-    error.code = 404; // dynamically adding property
-    return next(error);
-
-    // old error handling way
-    // return res.status(404).json({
-    //   message: `Could not find a place for the provided user id -> ${userId}`,
-    // });
   }
 
   res.json({ place });
