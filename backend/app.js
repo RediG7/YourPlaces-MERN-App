@@ -2,11 +2,20 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 const placesRoute = require("./routes/places-routes.js");
+const HttpError = require("./models/http-error.js");
 
 const app = express();
 
+app.use(bodyParser.json());
+
 // forwards to this route if it starts with /api/places
 app.use("/api/places", placesRoute); // => /api/places/... <= filter
+
+// Only runs if we did not send the response into one of our routes before.
+app.use((req, res, nex) => {
+  const error = new HttpError("Could not find this route.", 404);
+  throw error;
+});
 
 // Middleware function for error handling (express built-in)
 // recognized by express as a special middleware function aka error handling middleware function
