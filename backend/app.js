@@ -2,6 +2,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 const placesRoute = require("./routes/places-routes.js");
+const usersRoute = require("./routes/users-routes");
+
 const HttpError = require("./models/http-error.js");
 
 const app = express();
@@ -10,6 +12,7 @@ app.use(bodyParser.json());
 
 // forwards to this route if it starts with /api/places
 app.use("/api/places", placesRoute); // => /api/places/... <= filter
+app.use("/api/users", usersRoute);
 
 // Only runs if we did not send the response into one of our routes before.
 app.use((req, res, nex) => {
