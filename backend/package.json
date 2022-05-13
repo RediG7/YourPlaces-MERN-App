@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/RediG7/YourPlaces-MERN-App#readme",
   "dependencies": {
+    "axios": "^0.27.2",
     "express": "^4.18.1",
     "express-validator": "^6.14.0",
     "uuid": "^8.3.2"
