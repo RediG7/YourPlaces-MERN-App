@@ -19,34 +19,59 @@ let DUMMY_PLACES = [
   },
 ];
 
-const getPlaceById = (req, res, next) => {
+const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid; // { pid: 'p1'}
   // find returns any or undefined
-  const place = DUMMY_PLACES.find((p) => {
-    return p.id === placeId;
-  });
+  // const place = DUMMY_PLACES.find((p) => {
+  //   return p.id === placeId;
+  // });
+  // Doesn't return a promise but by mongoose we can stil use then catch
+  // make it a real Promise -> exec()
+  // asyncronous
+  let place = "";
+  try {
+    place = await Place.findById(placeId);
+  } catch (error) {
+    return next(error); // Better error messages
+  }
 
   // place -> if not found it comes undefined here
   // the opposite of undefined -> is true
   /*  !undefined = true */
   if (!place) {
     // synchronous code: (can use throw error)
-    throw new HttpError("Could not find a place with id: " + placeId, 404);
+    const error = new HttpError(
+      "Could not find a place with id: " + placeId,
+      404
+    );
+    return next(error);
   }
 
-  res.json({ place }); // => { place } => { place: place } ...
+  // convert to JS more readable object -> place.toObject
+  //  _id -> getters: true -> getters are added by mongoose and adds another id property to the created object
+  res.json({ place: place.toObject({ getters: true }) }); // => { place } => { place: place } ...
 };
 
 // Alternatives
 // function getPlaceById() { ... }
 // const getPlaceById = function() { ... }
 
-const getPlacesByUserId = (req, res, next) => {
+const getPlacesByUserId = async (req, res, next) => {
   const userId = req.params.uid;
 
-  const places = DUMMY_PLACES.filter((p) => {
-    return p.creator === userId;
-  });
+  // const places = DUMMY_PLACES.filter((p) => {
+  //   return p.creator === userId;
+  // });
+
+  let places = "";
+
+  try {
+    // MongoDB returns cursor, a pointer to the data
+    //Unline mongoose, but we could add cursor or exec for cursor(pointer) and exec(Promise)
+    places = await Place.find({ creator: userId });
+  } catch (error) {
+    return next(error);
+  }
 
   if (!places || places.length === 0) {
     // asynchronous code: (must use next(error))
@@ -58,7 +83,15 @@ const getPlacesByUserId = (req, res, next) => {
     );
   }
 
-  res.json({ places });
+  // One Way
+  // let [placesObj] = places;
+
+  // res.json({ places: placesObj.toObject({ getters: true }) });
+
+  // Another Way
+  res.json({
+    places: places.map((place) => place.toObject({ getters: true })),
+  });
 };
 
 const createPlace = async (req, res, next) => {
