@@ -9,7 +9,8 @@ const userSchema = new Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true, minlength: 6 },
   image: { type: String, required: true },
-  places: { type: String, required: true },
+  // multiple places entry [{}]
+  places: [{ type: mongoose.Types.ObjectId, required: true, ref: "Place" }],
 });
 
 // query as fast as possible, and make sure we can only create a new user if the email doesn't exist already
