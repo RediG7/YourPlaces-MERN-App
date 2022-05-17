@@ -8,20 +8,6 @@ const Place = require("../models/place");
 const User = require("../models/user");
 const user = require("../models/user");
 
-let DUMMY_PLACES = [
-  {
-    id: "p1",
-    title: "Vollga",
-    description: "Vendi katunarve te Durresit",
-    location: {
-      lat: parseFloat((Math.random() * 100).toFixed(10)),
-      lng: parseFloat((Math.random() * 100).toFixed(10)),
-    },
-    address: "random shit man",
-    creator: "u1",
-  },
-];
-
 const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid; // { pid: 'p1'}
   // find returns any or undefined
@@ -66,17 +52,17 @@ const getPlacesByUserId = async (req, res, next) => {
   //   return p.creator === userId;
   // });
 
-  let places = "";
-
+  // let places = "";
+  let userWithPlaces;
   try {
     // MongoDB returns cursor, a pointer to the data
     //Unline mongoose, but we could add cursor or exec for cursor(pointer) and exec(Promise)
-    places = await Place.find({ creator: userId });
+    userWithPlaces = await User.findById(userId).populate("places");
   } catch (error) {
     return next(error);
   }
 
-  if (!places || places.length === 0) {
+  if (!userWithPlaces || userWithPlaces.places.length === 0) {
     // asynchronous code: (must use next(error))
     return next(
       new HttpError(
@@ -93,7 +79,9 @@ const getPlacesByUserId = async (req, res, next) => {
 
   // Another Way
   res.json({
-    places: places.map((place) => place.toObject({ getters: true })),
+    places: userWithPlaces.places.map((place) =>
+      place.toObject({ getters: true })
+    ),
   });
 };
 
