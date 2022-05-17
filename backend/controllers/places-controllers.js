@@ -6,6 +6,7 @@ const HttpError = require("../models/http-error");
 const getCoordsForAddress = require("../util/location");
 const Place = require("../models/place");
 const User = require("../models/user");
+const user = require("../models/user");
 
 let DUMMY_PLACES = [
   {
@@ -205,13 +206,29 @@ const deletePlace = async (req, res, next) => {
 
   let place = "";
   try {
-    place = await Place.findById(placeId);
-  } catch (error) {
+    // populate() -> allows us to refer to a document stored in another collection and to work with data in that existing document of that other collection.
+    // To do so we need a relation. We established our relation before. user,places in the models
+    place = await Place.findById(placeId).populate("creator");
+  } catch (err) {
+    const error = new HttpError(
+      "Something went wrong, could not delete place.",
+      500
+    );
     return next(error); // Better error messages
   }
 
+  if (!place) {
+    const error = new HttpError("Could not find place for this id.", 404);
+    return next(error);
+  }
+
   try {
-    await place.remove();
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await place.remove({ session: sess });
+    place.creator.places.pull(place); // pull will automatically remove the _id
+    await place.creator.save({ session: sess });
+    await sess.commitTransaction();
   } catch (error) {
     return next(error);
   }
