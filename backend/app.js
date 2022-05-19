@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
@@ -48,7 +49,7 @@ app.use((error, req, res, next) => {
 // returns promise
 mongoose
   .connect(
-    "mongodb+srv://redi:tFHexy1MRIFIBGb0@2022projectscluster.qgiw4.mongodb.net/your_places?retryWrites=true&w=majority"
+    `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@2022projectscluster.qgiw4.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
   )
   .then(() => {
     console.log("Connected to db!");

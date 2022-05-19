@@ -1,14 +1,14 @@
+require("dotenv").config();
+
 const axios = require("axios");
 
 const HttpError = require("../models/http-error");
-
-const API_KEY = "zun55siuUqz4fxvm0KfOAXHGqxtQd9bn";
 
 async function getCoordsForAddress(address) {
   const response =
     await axios.get(`https://api.tomtom.com/search/2/geocode/${encodeURIComponent(
       address
-    )}.json?storeResult=false&view=Unified&key=${API_KEY}
+    )}.json?storeResult=false&view=Unified&key=${process.env.LOCATION_API_KEY}
   `);
 
   const data = response.data;
